@@ -1,0 +1,7 @@
+@font-face {
+    font-family: 'LogoFont';
+    src: local('LogoFont'), url(/assets/fonts/main.otf) format('opentype');
+}
+.css-batk84-MuiInputBase-root-MuiFilledInput-root {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+}
