@@ -1,4 +1,4 @@
-html,body{
-  -webkit-overflow-scrolling : touch !important;
-  overflow: hidden !important;
-}
+
+  body {
+    overflow: hidden; 
+  }

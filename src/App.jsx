@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { Box, IconButton, Typography, Drawer } from '@mui/material';
 import LogoFont from './components/LogoFont';
 import { Button, Fade } from '@mui/material';
 import './app.css';
-import { setScrollPosition, setSettingDrawer, setScreenState, resetPlayerIndex, setTeams } from './actions/actions';
+import { setScrollPosition, setSettingDrawer, setScreenState, resetPlayerIndex, setTeams, setNumberOfEntries, setTimeLimit, setPlayerCount } from './actions/actions';
 import PlayerForm from './components/PlayerForm.jsx';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -21,7 +21,22 @@ function App() {
   const playerIndex = useSelector((state) => state.playerIndex);
   const settingDrawer = useSelector((state) => state.settingDrawer);
   const mobile = useSelector((state) => state.mobile);
-
+  const playerErrors = useSelector((state) => state.playerErrors);
+  const useGlobalInputBlurListener = () => {
+    useEffect(() => {
+      const handleBlur = (event) => {
+        if (event.target.tagName === 'INPUT') {
+          document.documentElement.scrollTop = 0;
+          console.log(document.documentElement.scrollTop)
+        }
+      };
+      document.addEventListener('blur', handleBlur, true);
+      return () => {
+        document.removeEventListener('blur', handleBlur, true);
+      };
+    }, []);
+  };
+  useGlobalInputBlurListener();
   const handleScroll = () => {
     if (scrollPosition.main > -1900) {
       dispatch(setScrollPosition('main', scrollPosition.main - 100));
@@ -73,7 +88,16 @@ function App() {
     setTimeout(() => {
         dispatch(setScreenState('game'));
     }, 250);
-};
+  };
+
+  const isFourthPlayerComplete = () => {
+    if (playerIndex.length < 4) return false;
+    const fourthPlayer = playerIndex[3];
+    return (
+      fourthPlayer.playerName.trim() !== '' &&
+      fourthPlayer.entries.every(entry => entry.trim() !== '')
+    );
+  };
 
   return (
     <>
@@ -97,7 +121,7 @@ function App() {
             <SettingsIcon style={{color: theme.white}} />
           </IconButton>
         </Box>
-        <Fade in={playerIndex.length >= 4}>
+        <Fade in={playerIndex.length >= 4 && isFourthPlayerComplete()}>
           <Box
             sx={{
               position: 'fixed',

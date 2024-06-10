@@ -91,7 +91,6 @@ const PlayerForm = ({ index }) => {
         const errors = { playerName: false, entries: Array(numberOfEntries).fill(false) };
         dispatch(setPlayerErrors(errors));
         dispatch(updatePlayerField(index, field, value));
-        console.log(playerIndex);
     };
     
     return (
