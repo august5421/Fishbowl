@@ -2,16 +2,19 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import LogoFont from "./LogoFont";
 import { setActiveEntry, setTeamOneScore, setTeamTwoScore, setAllEntries, setActiveTeam, setActivePlayer, setGameState, setActiveRound } from "../actions/actions"; 
 import { useTimer } from 'use-timer';
-
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 const ClueLoop = (props) => {
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme);
+  const gameState = useSelector((state) => state.gameState);
   const playerIndex = useSelector((state) => state.playerIndex);
   const order = useSelector((state) => state.order);
   const allEntries = useSelector((state) => state.allEntries);
@@ -24,9 +27,10 @@ const ClueLoop = (props) => {
   const timeLimit = useSelector((state) => state.timeLimit);
 
   const [open, setOpen] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [timeOver, setTimeOver] = useState(false);
 
-  const { time, start, reset } = useTimer({
+  const { time, start, pause, reset } = useTimer({
     initialTime: timeLimit,
     endTime: 0,
     timerType: 'DECREMENTAL',
@@ -133,10 +137,44 @@ const ClueLoop = (props) => {
     dispatch(setActiveEntry(randomIndex));
   };
 
+  const handlePause = () => {
+    pause();
+    setIsPaused(true);
+  }
+
+  const handlePlay = () => {
+    start();
+    setIsPaused(false);
+  }
+
   const progress = (time / timeLimit) * 100;
 
   return (
     <Box style={{ position: 'relative', display: 'flex', flexDirection: "column", flex: 1, width: '100%', height: 'calc(100vh - 77px)', justifyContent: 'center', alignItems: 'center' }}>
+      {gameState !== null && gameState == 'actualGame' && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 16,
+            left: 16,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            zIndex: 11
+          }}
+        >
+          {!isPaused ? (
+            <IconButton style={{color: theme.white}} onClick={handlePause}>
+              <PauseIcon style={{color: theme.white}} />
+            </IconButton>
+          ) : (
+            <IconButton style={{color: theme.white}} onClick={handlePlay}>
+              <PlayArrowIcon style={{color: theme.white}} />
+            </IconButton>
+          )}
+          
+        </Box>
+      )}
       <Box position="relative" display="inline-flex">
         <CircularProgress variant="determinate" value={progress} size={100} thickness={5} />
         <Box
