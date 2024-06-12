@@ -4,7 +4,7 @@ import { Box, IconButton, Typography, Drawer } from '@mui/material';
 import LogoFont from './components/LogoFont';
 import { Button, Fade } from '@mui/material';
 import './app.css';
-import { setScrollPosition, setSettingDrawer, setScreenState, resetPlayerIndex, setTeams, setNumberOfEntries, setTimeLimit, setPlayerCount } from './actions/actions';
+import { setScrollPosition, setSettingDrawer, setScreenState, resetPlayerIndex, setTeams, setNumberOfEntries, setTimeLimit, setPlayerCount, setAllEntries, setOrder, setGameState, setActiveEntry, setTeamOneScore, setTeamTwoScore, setActiveTeam, setActivePlayer, setActiveRound } from './actions/actions';
 import PlayerForm from './components/PlayerForm.jsx';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -16,6 +16,7 @@ import StopIcon from '@mui/icons-material/Stop';
 function App() {
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme);
+  const teams = useSelector((state) => state.teams);
   const screenState = useSelector((state) => state.screenState);
   const scrollPosition = useSelector((state) => state.scrollPosition);
   const playerIndex = useSelector((state) => state.playerIndex);
@@ -27,7 +28,6 @@ function App() {
       const handleBlur = (event) => {
         if (event.target.tagName === 'INPUT') {
           document.documentElement.scrollTop = 0;
-          console.log(document.documentElement.scrollTop)
         }
       };
       document.addEventListener('blur', handleBlur, true);
@@ -58,6 +58,7 @@ function App() {
 
   const handleStop = () => {
     dispatch(setScreenState('start'));
+    dispatch(setGameState('teamBuild'));
     dispatch(resetPlayerIndex([{ playerName: '', entries: ['', '', ''] }]));
     dispatch(setNumberOfEntries(3));
     dispatch(setTimeLimit(60)); 
@@ -65,7 +66,15 @@ function App() {
     dispatch(setTeams({
       teamOne: [],
       teamTwo: []
-  }));
+    }));
+    dispatch(setOrder([]))
+    dispatch(setAllEntries([]))
+    dispatch(setActiveEntry(0)) 
+    dispatch(setTeamOneScore(0)) 
+    dispatch(setTeamTwoScore(0))
+    dispatch(setActiveTeam('teamOne')) 
+    dispatch(setActivePlayer(0)) 
+    dispatch(setActiveRound(0))
   }
 
   const handlePlay = () => {
@@ -76,9 +85,17 @@ function App() {
     const midIndex = Math.ceil(filteredPlayers.length / 2);
     const teamOne = filteredPlayers.slice(0, midIndex).map(player => player.playerName);
     const teamTwo = filteredPlayers.slice(midIndex).map(player => player.playerName);
-
+    const allEntries = playerIndex.map(player => player.entries).flat();
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }const shuffledEntries = shuffle(allEntries);
     dispatch(setTeams({ teamOne, teamTwo }));
-
+    dispatch(setAllEntries(shuffledEntries));
+    console.log(shuffledEntries)
     dispatch(setScrollPosition('main', 0));
     dispatch(setScrollPosition('onBoardingBlock', 0));
     const audio = new Audio(sound);
@@ -106,21 +123,23 @@ function App() {
       }}>
       </Box>
       <Box style={{display: 'flex', flexDirection: "column", alignItems: 'center', position: 'absolute', transition: 'top 1s ease-in-out', height: 'calc(100vh * 19)', top: `${scrollPosition.onBoardingBlock}vh`, left: 0, right: 0, bottom: 0, zIndex: 10}}>
-        <Box
-          sx={{
-            position: 'fixed',
-            top: 16,
-            left: 16,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            zIndex: 11
-          }}
-        >
-          <IconButton style={{color: theme.white}} onClick={handleSettings}>
-            <SettingsIcon style={{color: theme.white}} />
-          </IconButton>
-        </Box>
+        {screenState === 'start' && (
+          <Box
+            sx={{
+              position: 'fixed',
+              top: 16,
+              left: 16,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              zIndex: 11
+            }}
+          >
+            <IconButton style={{color: theme.white}} onClick={handleSettings}>
+              <SettingsIcon style={{color: theme.white}} />
+            </IconButton>
+          </Box>
+        )}
         <Fade in={playerIndex.length >= 4 && isFourthPlayerComplete()}>
           <Box
             sx={{
@@ -147,7 +166,7 @@ function App() {
         {screenState === 'game' && (
           <Fade in={screenState === 'game'}>
             <Box style={{display: 'flex', flex: 1, width: '100vw'}}>
-              <GameScreen />
+              <GameScreen handleStop={handleStop} />
             </Box>
           </Fade>
         )}
@@ -160,7 +179,8 @@ function App() {
                 style={{
                   color: theme.white,
                   borderColor: theme.white,
-                }} variant="outlined">Start!</Button>
+                  borderWidth: '2px',
+                }} variant="contained">{playerIndex.length == 1 ? (<span style={{fontWeight: 900}}>Start!</span>) : (<span style={{fontWeight: 900}}>Build Teams!</span>)}</Button>
             </Box>
             {playerIndex.map((player, index) => (
                 <Box key={index} style={{display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems: 'center', height: '100vh'}}>

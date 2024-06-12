@@ -135,8 +135,17 @@ const PlayerForm = ({ index }) => {
                 </Box>
             </Fade>
             {index === playerIndex.length - 1 ? (
-                <Button onClick={handleAdd} style={{ color: theme.white, borderColor: theme.white }} variant="outlined">
-                    Add!
+                <Button
+                    onClick={handleAdd}
+                    style={{
+                        color: theme.white,
+                        borderColor: theme.white,
+                        borderWidth: '2px',
+                        margin: '10px auto'
+                    }}
+                    variant="contained"
+                >
+                    <span style={{fontWeight: 900}}>Add!</span>
                 </Button>
             ) : null}
         </>

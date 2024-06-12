@@ -1,5 +1,6 @@
 const initialState = {
     screenState: "start",
+    gameState: "teamBuild",
     theme: {
         blueOne: '#040B2E',
         blueTwo: '#062653',
@@ -9,7 +10,7 @@ const initialState = {
         grey: '#37373d',
     },
     playerIndex: [
-        { playerName: '', entries: ['', '', ''] } 
+        { playerName: '', entries: ['', '', ''] },
     ],
     playerErrors: {
         playerName: false,
@@ -24,6 +25,14 @@ const initialState = {
         teamOne: [],
         teamTwo: []
     },
+    activeTeam: 'teamOne',
+    activePlayer: 0,
+    teamOneScore: 0,
+    teamTwoScore: 0,
+    allEntries: [],
+    activeEntry: 0,
+    activeRound: 0,
+    order: [],
     entries: [],
     settingDrawer: false,
     timeLimit: 60,
@@ -39,6 +48,13 @@ const initialState = {
                 ...state,
                 screenState: action.payload,
             };
+
+        case "SET_GAME_STATE":
+            return {
+                ...state,
+                gameState: action.payload,
+            };
+
         case "SET_PLAYER_COUNT":
             return {
                 ...state,
@@ -61,6 +77,18 @@ const initialState = {
             return {
                 ...state,
                 playerIndex: action.payload
+            };
+        
+        case "SET_ACTIVE_ENTRY": 
+            return {
+                ...state,
+                activeEntry: action.payload
+            };
+        
+        case "SET_ACTIVE_ROUND": 
+            return {
+                ...state,
+                activeRound: action.payload
             };
 
         case "SET_NUMBER_OF_ENTRIES":
@@ -116,7 +144,44 @@ const initialState = {
                 ...state,
                 teams: action.payload,
             };
+
+        case "SET_ACTIVE_TEAM":
+            return {
+                ...state,
+                activeTeam: action.payload,
+            };
+
+        
+        case "SET_ACTIVE_PLAYER":
+            return {
+                ...state,
+                activePlayer: action.payload,
+        };
+
+        case "SET_TEAM_ONE_SCORE":
+            return {
+                ...state,
+                teamOneScore: action.payload,
+            };
+
+        case "SET_TEAM_TWO_SCORE":
+            return {
+                ...state,
+                teamTwoScore: action.payload,
+            };
+        
+        case "SET_ALL_ENTRIES":
+            return {
+                ...state,
+                allEntries: action.payload,
+            };
             
+        case "SET_ORDER":
+            return {
+                ...state,
+                order: action.payload,
+            };
+
         case "SET_SCROLL_POSITION":
             return {
                 ...state,

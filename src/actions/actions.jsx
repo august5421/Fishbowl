@@ -3,6 +3,11 @@ export const setScreenState = (state) => ({
     payload: state,
 });
 
+export const setGameState = (state) => ({
+    type: "SET_GAME_STATE",
+    payload: state,
+});
+
 export const setPlayerCount = (state) => ({
     type: "SET_PLAYER_COUNT",
     payload: state,
@@ -50,6 +55,46 @@ export const updatePlayerField = (index, field, value) => ({
 export const setTeams = (teams) => ({
     type: "SET_TEAMS",
     payload: teams,
+});
+
+export const setAllEntries = (state) => ({
+    type: "SET_ALL_ENTRIES",
+    payload: state,
+});
+
+export const setActiveEntry = (state) => ({
+    type: "SET_ACTIVE_ENTRY",
+    payload: state,
+});
+
+export const setActiveRound = (state) => ({
+    type: "SET_ACTIVE_ROUND",
+    payload: state,
+});
+
+export const setActiveTeam = (state) => ({
+    type: "SET_ACTIVE_TEAM",
+    payload: state,
+});
+
+export const setActivePlayer = (state) => ({
+    type: "SET_ACTIVE_PLAYER",
+    payload: state,
+});
+
+export const setTeamOneScore = (state) => ({
+    type: "SET_TEAM_ONE_SCORE",
+    payload: state,
+});
+
+export const setTeamTwoScore = (state) => ({
+    type: "SET_TEAM_TWO_SCORE",
+    payload: state,
+});
+
+export const setOrder = (state) => ({
+    type: "SET_ORDER",
+    payload: state,
 });
 
 export const setNumberOfEntries = (state) => ({
